@@ -1,3 +1,4 @@
+df = load_database(DB_PATH)
 import io
 import os
 import re
@@ -63,7 +64,7 @@ if not os.path.exists(DB_PATH):
     create_database(DB_PATH)
 
 
-df = load_database(DB_PATH)
+
 
 # Normalizar algunos valores
 if 'Location' in df.columns:
