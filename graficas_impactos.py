@@ -1,5 +1,7 @@
 import io
+import os
 import re
+import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -43,7 +45,25 @@ def parse_age(value):
         return None
 
 
-df = pd.read_csv(io.StringIO(csv_data), quotechar='"', skipinitialspace=True)
+DB_PATH = 'impactos.db'
+TABLE_NAME = 'impactos'
+
+def create_database(path):
+    df_source = pd.read_csv(io.StringIO(csv_data), quotechar='"', skipinitialspace=True)
+    with sqlite3.connect(path) as conn:
+        df_source.to_sql(TABLE_NAME, conn, if_exists='replace', index=False)
+
+
+def load_database(path):
+    with sqlite3.connect(path) as conn:
+        return pd.read_sql_query(f'SELECT * FROM {TABLE_NAME}', conn)
+
+
+if not os.path.exists(DB_PATH):
+    create_database(DB_PATH)
+
+
+df = load_database(DB_PATH)
 
 # Normalizar algunos valores
 if 'Location' in df.columns:
